@@ -1,59 +1,8 @@
-# LSH+3.8
 import SimpleITK as sitk
 import pydicom
 import numpy as np
 import os
 import natsort
-import math
-from PIL import Image
-from PIL import ImageFont, ImageDraw
-import glob
-import matplotlib.pyplot as plt
-def imread_kor ( filePath, mode=cv2.IMREAD_UNCHANGED ) : 
-    stream = open( filePath.encode("utf-8") , "rb") 
-    bytes = bytearray(stream.read()) 
-    numpyArray = np.asarray(bytes, dtype=np.uint8)
-    return cv2.imdecode(numpyArray , mode)
-def imwrite_kor(filename, img, params=None): 
-    try: 
-        ext = os.path.splitext(filename)[1] 
-        result, n = cv2.imencode(ext, img, params) 
-        if result:
-            with open(filename, mode='w+b') as f: 
-                n.tofile(f) 
-                return True
-        else: 
-            return False 
-    except Exception as e: 
-        print(e) 
-        return False
-def find_all(str,target):
-    index = -1
-    index_list=[]
-    while True:
-        index = str.find(target, index + 1)
-        if index == -1:
-            break
-        index_list.append(index)
-    return index_list
-def make_inform_image(text,output):
-    font= ImageFont.truetype(r'C:\Windows\Fonts\\gulim.ttc',30)
-    img= np.full((512,512,3),(255,255,255), np.uint8)
-    img=Image.fromarray(img)
-    draw = ImageDraw.Draw(img)
-    draw.text((50,0),text, font=font, fill=(0,0,0))
-    draw.text((50,110),text, font=font, fill=(0,0,0))
-    draw.text((50,220),text, font=font, fill=(0,0,0))
-    draw.text((50,330),text, font=font, fill=(0,0,0))
-    draw.text((50,440),text, font=font, fill=(0,0,0))
-    
-    draw.text((270,50),text, font=font, fill=(0,0,0))
-    draw.text((270,160),text, font=font, fill=(0,0,0))
-    draw.text((270,270),text, font=font, fill=(0,0,0))
-    draw.text((270,380),text, font=font, fill=(0,0,0))
-    
-    img= np.array(img)
-    imwrite_kor(output,img)
 
 # 1) DICOM 파일을 불러와서 3D 객체로 concatenation
 def load_dicom_as_3d(folder_path, ref_filename, origin, num_adjacent_files=15):
