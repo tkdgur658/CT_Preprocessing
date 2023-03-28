@@ -64,10 +64,9 @@ def apply_voi_lut(image, window_level, window_width):
 
     # VOI LUT 연산 적용
     rescaled_image = voi_lut_filter.Execute(image)
-
-    
-    #rescaled_image = sitk.IntensityWindowing(image, windowMaximum=windowMaximum, windowMinimum=windowMinimum, outputMinimum=0.0, outputMaximum=255.0)
+   
     return sitk.Cast(rescaled_image, sitk.sitkUInt8)
+
 def center_crop_or_pad_sitk(img, output_size):
     """
     SimpleITK 이미지를 center crop하거나 zero-padding하여 원하는 크기로 조정합니다.
@@ -111,6 +110,7 @@ def center_crop_pad(img, output_size):
     pad_width = pad_width = ((int(math.ceil(pad_diff[0]/2)), int(math.floor(pad_diff[0]/2))), (int(math.ceil(pad_diff[1]/2)), int(math.floor(pad_diff[1]/2))), (int(math.ceil(pad_diff[2]/2)), int(math.floor(pad_diff[2]/2))))
     padded_img = np.pad(cropped_img, pad_width, mode='constant', constant_values=0)
     return padded_img
+
 def preprocessing_CT(dicom_folder, ref_filename, output_path, npy_or_jpg=True):
     #folder_path = r"C:\Users\LSH\Desktop\2013_04_11"
     #ref_filename = "10028.dcm"
@@ -118,9 +118,9 @@ def preprocessing_CT(dicom_folder, ref_filename, output_path, npy_or_jpg=True):
     dicom = pydicom.dcmread(f'{dicom_folder}/{ref_filename}')
     slice_thickness = dicom.SliceThickness
     pixel_spacing = dicom.PixelSpacing
-    
     origin = sitk.ReadImage(os.path.join(dicom_folder, ref_filename)).GetOrigin()
-    # 위 아래 16mm 정도만 가져옴.
+    
+    # ref 파일을 중심으로 위 아래 16mm 정도만 가져옴.
     num_adjacent_files= int(16/slice_thickness)
         
     # 1) 다수의 (512, 512) 크기의 DICOM 파일을 불러와서 3D 객체로 concatenation
@@ -140,7 +140,6 @@ def preprocessing_CT(dicom_folder, ref_filename, output_path, npy_or_jpg=True):
         np.save(output_path, image)
     #save as jpg
     else:
-        
         # numpy 배열을 SimpleITK 이미지로 변환
         image = sitk.GetImageFromArray(image)
         # 각 슬라이스를 반복하며 2D 이미지를 저장
